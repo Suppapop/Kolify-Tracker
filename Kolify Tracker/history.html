@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Kolify Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center space-x-6">
+            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12">
+            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify Tracker</span>
+            <a href="workspace.html" class="text-slate-600 hover:text-blue-600 ml-8 font-medium">Workspace</a>
+            <a href="history.html" class="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">History (DB)</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="bg-slate-100 rounded-full py-2 px-4 flex items-center shadow-inner">
+                <span class="font-semibold text-slate-800 mr-2">🪙 1,200 Credits</span>
+            </div>
+            <a href="topup.html" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700">Top Up</a>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500"></div>
+        </div>
+    </nav>
+
+    <div class="p-8 max-w-6xl mx-auto pb-24">
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">Campaign History</h1>
+        <p class="text-slate-500 mb-8 font-medium">Access your raw tracking databases and analyze performance deltas.</p>
+        
+        <!-- Campaign 1 -->
+        <div class="bg-white border-2 border-purple-300 rounded-xl shadow-md overflow-hidden mb-6 transition">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Summer Launch 2026 <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded ml-2">Active</span></h3>
+                    <p class="text-sm text-slate-500 font-medium">Last Tracked: Today, 10:45 AM • 50 Links Valid</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white border text-slate-700 font-bold px-4 py-2 rounded-lg hover:bg-slate-100 text-sm">Download .CSV</button>
+                    <a href="dashboard.html" class="bg-slate-800 text-white font-bold px-4 py-2 rounded-lg hover:bg-slate-700 text-sm flex items-center">View Dashboard</a>
+                </div>
+            </div>
+            <div class="p-6 bg-white">
+                <p class="text-green-600 font-bold bg-green-50 inline-block px-4 py-2 rounded border border-green-200">Overall Growth: +150,100 Views | +5,005 Likes 📈 (Compared to yesterday)</p>
+            </div>
+        </div>
+
+        <!-- Campaign 2 -->
+        <div class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6 hover:shadow-md transition opacity-90">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Back to School 2026</h3>
+                    <p class="text-sm text-slate-500 font-medium">Last Tracked: Aug 12, 2026 • 25 Links Valid</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white border text-slate-700 font-bold px-4 py-2 rounded-lg hover:bg-slate-100 text-sm">Download .CSV</button>
+                    <button class="bg-slate-200 text-slate-600 font-bold px-4 py-2 rounded-lg cursor-not-allowed text-sm flex items-center">View Dashboard</button>
+                </div>
+            </div>
+            <div class="p-6 bg-white">
+                <p class="text-slate-600 font-bold bg-slate-100 inline-block px-4 py-2 rounded border">Final Results: 4.2M Views | 15% Avg. ER</p>
+            </div>
+        </div>
+
+        <!-- Campaign 3 -->
+        <div class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6 hover:shadow-md transition opacity-80">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Winter Promo 2025</h3>
+                    <p class="text-sm text-slate-500 font-medium">Last Tracked: Dec 15, 2025 • 120 Links Valid</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white border text-slate-700 font-bold px-4 py-2 rounded-lg hover:bg-slate-100 text-sm">Download .CSV</button>
+                    <button class="bg-slate-100 text-slate-400 font-bold px-4 py-2 rounded-lg cursor-not-allowed text-sm">Archived</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign 4 -->
+        <div class="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition opacity-70">
+            <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">11.11 Mega Sale 2025</h3>
+                    <p class="text-sm text-slate-500 font-medium">Last Tracked: Nov 15, 2025 • 200 Links Valid</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white border text-slate-700 font-bold px-4 py-2 rounded-lg hover:bg-slate-100 text-sm">Download .CSV</button>
+                    <button class="bg-slate-100 text-slate-400 font-bold px-4 py-2 rounded-lg cursor-not-allowed text-sm">Archived</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
