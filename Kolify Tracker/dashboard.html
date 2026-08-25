@@ -5,15 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Kolify Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- นำเข้า Chart.js สำหรับวาดกราฟ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .gradient-text { background: linear-gradient(to right, #FF4B2B, #FF416C, #8A2387, #240b36); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        ::-webkit-scrollbar { height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; rounded: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
     </style>
 </head>
 <body class="text-slate-800">
 
+    <!-- NAVBAR -->
     <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center space-x-6">
-            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12">
+            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12" onerror="this.style.display='none'">
             <span class="font-bold text-xl tracking-tight text-slate-800">Kolify Tracker</span>
             <a href="workspace.html" class="text-slate-600 hover:text-blue-600 ml-8 font-medium">Workspace</a>
             <a href="history.html" class="text-slate-600 hover:text-blue-600 font-medium">History (DB)</a>
@@ -22,35 +29,123 @@
             <div class="bg-slate-100 rounded-full py-2 px-4 flex items-center shadow-inner">
                 <span class="font-semibold text-slate-800 mr-2">🪙 1,200 Credits</span>
             </div>
-            <a href="topup.html" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700">Top Up</a>
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500"></div>
+            <a href="topup.html" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 transition shadow-sm">Top Up</a>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500 shadow-sm border-2 border-white"></div>
         </div>
     </nav>
 
-    <div class="p-8 max-w-[95%] mx-auto pb-24">
-        <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl border shadow-sm">
-            <div>
+    <div class="p-8 max-w-[95%] mx-auto pb-24 mt-4">
+        
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-purple-50 to-transparent"></div>
+            <div class="relative z-10">
                 <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Campaign Report</p>
                 <h1 class="text-3xl font-bold text-slate-800">Summer Launch 2026</h1>
-                <p class="text-slate-500 font-medium mt-1">Tracked: Just now • 50 Posts Analyzed</p>
+                <p class="text-slate-500 font-medium mt-1">Tracked: Just now • 4 Valid Posts Analyzed (1 Skipped)</p>
             </div>
-            <div class="flex space-x-4">
-                <a href="workspace.html" class="text-slate-600 hover:text-slate-800 font-bold px-4 py-2 border rounded-lg hover:bg-slate-50 flex items-center">Back to Track</a>
-                <button class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold shadow-md flex items-center">Export PDF</button>
+            <div class="flex space-x-4 relative z-10">
+                <a href="workspace.html" class="text-slate-600 hover:text-slate-800 font-bold px-4 py-2 border rounded-lg hover:bg-slate-50 flex items-center transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Track
+                </a>
+                <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold shadow-md hover:bg-slate-700 flex items-center transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export PDF
+                </button>
             </div>
         </div>
 
+        <!-- KPI Cards -->
         <div class="grid grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-[#FF4B2B]"></div><p class="text-slate-500 text-sm font-bold uppercase">Total Views</p><p class="text-4xl font-black mt-2 text-slate-800">1,452,300</p></div>
-            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-[#FF416C]"></div><p class="text-slate-500 text-sm font-bold uppercase">Total Likes</p><p class="text-4xl font-black mt-2 text-slate-800">128,450</p></div>
-            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-[#8A2387]"></div><p class="text-slate-500 text-sm font-bold uppercase">Total Comments</p><p class="text-4xl font-black mt-2 text-slate-800">4,320</p></div>
-            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-[#4A00E0]"></div><p class="text-slate-500 text-sm font-bold uppercase">Avg. Engagement</p><p class="text-4xl font-black mt-2 text-green-600">9.14%</p></div>
+            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden group hover:shadow-md transition">
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#FF4B2B]"></div>
+                <div class="flex justify-between items-start">
+                    <p class="text-slate-500 text-sm font-bold uppercase">Total Views</p>
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">↑ 11.5%</span>
+                </div>
+                <p class="text-4xl font-black mt-2 text-slate-800">1,542,800</p>
+                <p class="text-xs text-slate-400 mt-2">vs Previous snapshot</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden group hover:shadow-md transition">
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#FF416C]"></div>
+                <div class="flex justify-between items-start">
+                    <p class="text-slate-500 text-sm font-bold uppercase">Total Likes</p>
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">↑ 8.2%</span>
+                </div>
+                <p class="text-4xl font-black mt-2 text-slate-800">132,905</p>
+                <p class="text-xs text-slate-400 mt-2">vs Previous snapshot</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden group hover:shadow-md transition">
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#8A2387]"></div>
+                <div class="flex justify-between items-start">
+                    <p class="text-slate-500 text-sm font-bold uppercase">Total Comments</p>
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">↑ 4.1%</span>
+                </div>
+                <p class="text-4xl font-black mt-2 text-slate-800">4,430</p>
+                <p class="text-xs text-slate-400 mt-2">vs Previous snapshot</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl border shadow-sm relative overflow-hidden group hover:shadow-md transition">
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#4A00E0]"></div>
+                <div class="flex justify-between items-start">
+                    <p class="text-slate-500 text-sm font-bold uppercase">Avg. Engagement</p>
+                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded">- 0.2%</span>
+                </div>
+                <p class="text-4xl font-black mt-2 text-indigo-600">8.95%</p>
+                <p class="text-xs text-slate-400 mt-2">Industry standard: 4.5%</p>
+            </div>
         </div>
 
+        <!-- 📊 Charts Section (ดีไซน์ใหม่) -->
+        <div class="grid grid-cols-3 gap-6 mb-8">
+            
+            <!-- Overview Line Chart (ครอบคลุม 2 คอลัมน์) -->
+            <div class="col-span-2 bg-white p-6 rounded-xl border shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-slate-800">Campaign Growth Overview</h3>
+                    <select class="text-xs border rounded px-2 py-1 text-slate-500 outline-none">
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                </div>
+                <!-- พื้นที่วาดกราฟ -->
+                <div class="relative h-64 w-full">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sentiment Analysis Chart (ครอบคลุม 1 คอลัมน์) -->
+            <div class="col-span-1 bg-white p-6 rounded-xl border shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-slate-800">Sentiment Analysis</h3>
+                    <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">AI Scraped</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">Based on 4,430 extracted comments</p>
+                
+                <!-- พื้นที่วาดกราฟโดนัท -->
+                <div class="relative flex-grow flex items-center justify-center h-48 w-full">
+                    <canvas id="sentimentChart"></canvas>
+                    <!-- ตัวเลขเปอร์เซ็นต์ตรงกลางโดนัท -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                        <span class="text-2xl font-black text-green-500">65%</span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">Positive</span>
+                    </div>
+                </div>
+                
+                <!-- Legend ใต้กราฟ -->
+                <div class="flex justify-between mt-4 text-xs font-bold">
+                    <div class="flex items-center text-green-600"><div class="w-3 h-3 rounded-full bg-green-400 mr-2"></div> Positive (65%)</div>
+                    <div class="flex items-center text-slate-500"><div class="w-3 h-3 rounded-full bg-slate-200 mr-2"></div> Neutral (20%)</div>
+                    <div class="flex items-center text-red-500"><div class="w-3 h-3 rounded-full bg-red-400 mr-2"></div> Negative (15%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📋 Top Performers Table -->
         <div class="bg-white p-8 rounded-xl border shadow-sm">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-800">Top Performers Breakdown</h3>
-                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold">Auto-Tiering Active</span>
+                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold shadow-sm">Auto-Tiering Active</span>
             </div>
             
             <div class="overflow-x-auto pb-4">
@@ -69,66 +164,153 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- มีคนเก่าที่ยอดโตขึ้น -->
+                        <!-- โพสต์ที่ 1 -->
                         <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
                             <td class="py-4 font-bold text-slate-800">@john_doe <br><span class="text-xs font-normal text-slate-500">Tech</span></td>
-                            <td class="py-4"><span class="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-2 py-1 rounded text-xs font-bold shadow-sm">MACRO</span><br><span class="text-xs text-slate-500">1.25M Fol.</span></td>
+                            <td class="py-4"><span class="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm">MACRO</span><br><span class="text-xs text-slate-500">1.25M Fol.</span></td>
                             <td class="py-4 font-mono font-medium text-lg">1,250,000 <span class="text-green-500 text-xs font-bold ml-1 tracking-tighter">↑ 150K</span></td>
                             <td class="py-4 font-mono font-medium">115,000 <span class="text-green-500 text-xs font-bold ml-1">↑ 5K</span></td>
                             <td class="py-4 font-mono font-medium">3,250 <span class="text-green-500 text-xs font-bold ml-1">↑ 130</span></td>
                             <td class="py-4 font-mono font-medium">600 <span class="text-green-500 text-xs font-bold ml-1">↑ 60</span></td>
                             <td class="py-4 font-mono font-medium">1,250 <span class="text-green-500 text-xs font-bold ml-1">↑ 50</span></td>
                             <td class="py-4 font-mono text-slate-500">2026-08-10</td>
-                            <td class="py-4 text-right"><span class="text-green-500 text-sm font-bold bg-green-50 px-2 py-1 rounded">✓ Updated</span></td>
+                            <td class="py-4 text-right"><span class="text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded border border-green-100">✓ Updated</span></td>
                         </tr>
-                        <!-- มีคนเก่าที่ยอดไม่ค่อยวิ่ง -->
+                        <!-- โพสต์ที่ 2 -->
                         <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
                             <td class="py-4 font-bold text-slate-800">@sarah_style <br><span class="text-xs font-normal text-slate-500">Beauty</span></td>
-                            <td class="py-4"><span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs font-bold">MICRO</span><br><span class="text-xs text-slate-500">45K Fol.</span></td>
+                            <td class="py-4"><span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-[10px] font-bold">MICRO</span><br><span class="text-xs text-slate-500">45K Fol.</span></td>
                             <td class="py-4 font-mono font-medium text-lg">45,100 <span class="text-slate-400 text-xs font-bold ml-1 tracking-tighter">↑ 100</span></td>
                             <td class="py-4 font-mono font-medium">3,205 <span class="text-slate-400 text-xs font-bold ml-1">↑ 5</span></td>
                             <td class="py-4 font-mono font-medium">120 <span class="text-slate-400 text-xs font-bold ml-1">-</span></td>
                             <td class="py-4 font-mono font-medium">15 <span class="text-slate-400 text-xs font-bold ml-1">-</span></td>
                             <td class="py-4 font-mono font-medium">45 <span class="text-slate-400 text-xs font-bold ml-1">-</span></td>
                             <td class="py-4 font-mono text-slate-500">2026-08-12</td>
-                            <td class="py-4 text-right"><span class="text-green-500 text-sm font-bold bg-green-50 px-2 py-1 rounded">✓ Updated</span></td>
+                            <td class="py-4 text-right"><span class="text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded border border-green-100">✓ Updated</span></td>
                         </tr>
-                        <!-- คนใหม่ที่เพิ่งดึงได้ครั้งแรก (New) -->
+                        <!-- โพสต์ที่ 3 (New) -->
                         <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
                             <td class="py-4 font-bold text-slate-800">@foodie_bkk <br><span class="text-xs font-normal text-slate-500">Food</span></td>
-                            <td class="py-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">MID-TIER</span><br><span class="text-xs text-slate-500">120K Fol.</span></td>
+                            <td class="py-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold">MID-TIER</span><br><span class="text-xs text-slate-500">120K Fol.</span></td>
                             <td class="py-4 font-mono font-medium text-lg">152,300 <span class="text-blue-500 text-xs font-bold ml-1 tracking-tighter">NEW</span></td>
                             <td class="py-4 font-mono font-medium">10,200 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">850 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">120 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">340 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono text-slate-500">2026-08-18</td>
-                            <td class="py-4 text-right"><span class="text-blue-500 text-sm font-bold bg-blue-50 px-2 py-1 rounded">✧ New Post</span></td>
+                            <td class="py-4 text-right"><span class="text-blue-600 text-xs font-bold bg-blue-50 px-2 py-1 rounded border border-blue-100">✧ New Post</span></td>
                         </tr>
-                        <tr class="hover:bg-slate-50 transition">
+                        <!-- โพสต์ที่ 4 (New) -->
+                        <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
                             <td class="py-4 font-bold text-slate-800">@travel_guy <br><span class="text-xs font-normal text-slate-500">Travel</span></td>
-                            <td class="py-4"><span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold">MACRO</span><br><span class="text-xs text-slate-500">890K Fol.</span></td>
+                            <td class="py-4"><span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold">MACRO</span><br><span class="text-xs text-slate-500">890K Fol.</span></td>
                             <td class="py-4 font-mono font-medium text-lg">95,400 <span class="text-blue-500 text-xs font-bold ml-1 tracking-tighter">NEW</span></td>
                             <td class="py-4 font-mono font-medium">4,500 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">210 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">80 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono font-medium">45 <span class="text-blue-500 text-xs font-bold ml-1">NEW</span></td>
                             <td class="py-4 font-mono text-slate-500">2026-08-19</td>
-                            <td class="py-4 text-right"><span class="text-blue-500 text-sm font-bold bg-blue-50 px-2 py-1 rounded">✧ New Post</span></td>
+                            <td class="py-4 text-right"><span class="text-blue-600 text-xs font-bold bg-blue-50 px-2 py-1 rounded border border-blue-100">✧ New Post</span></td>
+                        </tr>
+                        <!-- แถวสถานะ Invalid Link -->
+                        <tr class="bg-red-50 hover:bg-red-100 transition">
+                            <td class="py-4 font-bold text-red-700">@gaming_god <br><span class="text-xs font-normal text-red-500">Invalid Link</span></td>
+                            <td class="py-4"><span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-[10px] font-bold">NANO</span><br><span class="text-xs text-red-500">8.5K Fol.</span></td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 font-mono text-red-400">-</td>
+                            <td class="py-4 text-right"><span class="text-red-500 text-xs font-bold bg-white px-2 py-1 rounded border border-red-200">⚠ Skipped</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
         
-        <div class="mt-8 bg-slate-900 rounded-xl p-10 flex justify-between items-center text-white shadow-2xl relative overflow-hidden">
-            <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-600 rounded-full blur-3xl opacity-30"></div>
-            <div class="relative z-10">
-                <h3 class="text-3xl font-black mb-3">Tired of managing spreadsheets?</h3>
-                <p class="text-slate-300 text-lg">Discover Influencers, Manage Campaigns, and Automate Reports seamlessly.</p>
-            </div>
-            <button class="relative z-10 bg-white text-slate-900 px-10 py-4 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg">Explore Kolify.one</button>
-        </div>
-    </div>
+        <div id="kolify-cta-banner"></div>
+
+    <!-- Script สำหรับวาดกราฟด้วย Chart.js -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. วาดกราฟ Overview (Line Chart)
+            const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+            
+            // สร้าง Gradient สำหรับกราฟเส้น
+            let gradientBlue = ctxOverview.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, 'rgba(79, 70, 229, 0.4)'); // Indigo-600 อ่อนๆ
+            gradientBlue.addColorStop(1, 'rgba(79, 70, 229, 0)');
+            
+            new Chart(ctxOverview, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
+                    datasets: [{
+                        label: 'Total Views Growth',
+                        data: [1100000, 1150000, 1220000, 1310000, 1380000, 1450000, 1542800],
+                        borderColor: '#4F46E5', // Indigo-600
+                        backgroundColor: gradientBlue,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4F46E5',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4 // ทำให้เส้นโค้งสมูท
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: false, 
+                            grid: { color: '#f1f5f9', drawBorder: false },
+                            ticks: { callback: function(value) { return (value / 1000) + 'K'; } } // ย่อเลขหลักล้านเป็น K
+                        },
+                        x: { grid: { display: false, drawBorder: false } }
+                    },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                }
+            });
+
+            // 2. วาดกราฟ Sentiment Analysis (Doughnut Chart)
+            const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(ctxSentiment, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Neutral', 'Negative'],
+                    datasets: [{
+                        data: [65, 20, 15],
+                        backgroundColor: [
+                            '#34D399', // Green-400
+                            '#E2E8F0', // Slate-200
+                            '#F87171'  // Red-400
+                        ],
+                        borderWidth: 0, // ปิดเส้นขอบเพื่อให้ดู Modern
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // ทำให้รูตรงกลางใหญ่ขึ้น
+                    plugins: {
+                        legend: { display: false }, // ซ่อน Legend ดั้งเดิม (เราใช้ HTML เขียนแทนด้านล่างกราฟ)
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' ' + context.label + ': ' + context.parsed + '%'; }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <!-- สคริปต์เรียกแบนเนอร์ CTA -->
+    <script src="banner.js"></script>
 </body>
 </html>
