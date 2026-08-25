@@ -3,56 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top Up - Kolify Tracker</title>
+    <title>Top Up & Subscription - Kolify Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         .gradient-text { background: linear-gradient(to right, #FF4B2B, #FF416C, #8A2387, #240b36); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-bg { background: linear-gradient(135deg, #FF4B2B, #8A2387, #4A00E0); }
+        .selected-card { border-color: #8A2387 !important; border-width: 2px !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important; transform: scale(1.02); }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 pb-32">
 
+    <!-- NAVBAR -->
     <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center space-x-6">
-            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12">
-            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify Tracker</span>
+            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12" onerror="this.style.display='none'">
+            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify <span class="text-slate-400 font-normal">Tracker</span></span>
             <a href="workspace.html" class="text-slate-600 hover:text-blue-600 ml-8 font-medium">Workspace</a>
             <a href="history.html" class="text-slate-600 hover:text-blue-600 font-medium">History (DB)</a>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="workspace.html" class="bg-white border text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50">Cancel</a>
+            <!-- ปุ่ม Cancel กลับไปหน้า Workspace -->
+            <a href="workspace.html" class="bg-white border text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition shadow-sm">Cancel</a>
         </div>
     </nav>
 
-    <div class="p-8 max-w-4xl mx-auto">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-slate-800 mb-4">Top Up Credits</h1>
-            <p class="text-slate-500">1 Credit = 1 Link Tracking. Secure payment via Omise.</p>
+    <div class="p-8 max-w-5xl mx-auto mt-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-slate-800 mb-4">Choose Your Plan</h1>
+            <p class="text-slate-500 text-lg">1 Credit = 1 Link Tracking. Save more with monthly subscriptions. Secure payment via Omise.</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-xl border shadow-sm hover:border-blue-500 cursor-pointer text-center flex flex-col justify-between">
-                <div><h3 class="text-xl font-bold mb-2">Starter</h3><div class="text-3xl font-black gradient-text mb-4">100 Credits</div><p class="text-slate-500">฿500.00 THB</p></div>
+        <!-- 🌟 หมวดที่ 1: Monthly Subscriptions (แผนรายเดือนที่คุ้มกว่า) -->
+        <div class="mb-16">
+            <div class="flex items-center justify-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Monthly Subscriptions</h2>
+                <span class="ml-3 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Best Value</span>
             </div>
-            <div class="bg-white p-6 rounded-xl border-2 border-purple-500 shadow-md relative text-center flex flex-col justify-between transform scale-105">
-                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</div>
-                <div><h3 class="text-xl font-bold mb-2">Pro</h3><div class="text-3xl font-black gradient-text mb-2">500 Credits</div><p class="text-green-600 font-bold">฿2,375.00 THB</p></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl border shadow-sm hover:border-blue-500 cursor-pointer text-center flex flex-col justify-between">
-                <div><h3 class="text-xl font-bold mb-2">Agency</h3><div class="text-3xl font-black gradient-text mb-2">2,000 Credits</div><p class="text-green-600 font-bold">฿9,000.00 THB</p></div>
+            
+            <div class="grid grid-cols-3 gap-6">
+                <!-- Sub 1 -->
+                <div onclick="selectPlan(this, 'Basic Subscription', '2,000.00', 'Subscribe via Omise')" class="plan-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer text-center flex flex-col justify-between relative">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Basic</h3>
+                        <p class="text-sm text-slate-400 mb-4">Ideal for freelancers</p>
+                        <div class="text-3xl font-black gradient-text mb-1">500 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-slate-500 text-sm">~ ฿4.00 per credit</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800">฿2,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                    </div>
+                </div>
+
+                <!-- Sub 2 (Popular) -->
+                <div onclick="selectPlan(this, 'Pro Subscription', '7,000.00', 'Subscribe via Omise')" class="plan-card bg-white p-6 rounded-2xl border-2 border-purple-500 shadow-lg cursor-pointer text-center flex flex-col justify-between relative transform scale-105 selected-card">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-sm">MOST POPULAR</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Pro</h3>
+                        <p class="text-sm text-slate-400 mb-4">Perfect for growing agencies</p>
+                        <div class="text-3xl font-black gradient-text mb-1">2,000 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-green-600 font-bold text-sm">Save 30% (~ ฿3.50 per credit)</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800">฿7,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                    </div>
+                </div>
+
+                <!-- Sub 3 -->
+                <div onclick="selectPlan(this, 'Enterprise Subscription', '30,000.00', 'Subscribe via Omise')" class="plan-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer text-center flex flex-col justify-between relative">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Enterprise</h3>
+                        <p class="text-sm text-slate-400 mb-4">For large-scale operations</p>
+                        <div class="text-3xl font-black gradient-text mb-1">10,000 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-green-600 font-bold text-sm">Save 40% (~ ฿3.00 per credit)</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800">฿30,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-8 max-w-2xl mx-auto flex items-center justify-between">
-            <div>
-                <h4 class="font-bold text-slate-700 mb-1">Selected: Pro Package</h4>
-                <p class="text-2xl font-black text-slate-800">฿2,375.00</p>
+        <!-- เส้นแบ่ง -->
+        <div class="flex items-center my-12">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="mx-4 text-slate-400 text-sm font-medium uppercase tracking-wider">OR</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <!-- 🛒 หมวดที่ 2: Pay As You Go (เติมครั้งเดียว) -->
+        <div class="mb-12">
+            <div class="flex items-center justify-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Pay As You Go</h2>
+                <span class="ml-3 bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">One-time Top Up</span>
             </div>
-            <a href="workspace.html" onclick="alert('Payment Successful via Omise!')" class="bg-slate-800 text-white px-8 py-3 rounded-lg font-bold shadow-md hover:bg-slate-700 flex items-center">
-                Pay with Omise
-            </a>
+
+            <div class="grid grid-cols-3 gap-6 opacity-90 hover:opacity-100 transition-opacity">
+                <!-- Topup 1 -->
+                <div onclick="selectPlan(this, 'Starter Package (One-time)', '500.00', 'Pay with Omise')" class="plan-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer text-center flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Starter</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">100 Credits</div>
+                        <p class="text-slate-500 text-sm">฿5.00 per credit</p>
+                        <p class="text-lg font-bold text-slate-800 mt-4">฿500.00</p>
+                    </div>
+                </div>
+
+                <!-- Topup 2 -->
+                <div onclick="selectPlan(this, 'Pro Package (One-time)', '2,375.00', 'Pay with Omise')" class="plan-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer text-center flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Pro</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">500 Credits</div>
+                        <p class="text-slate-500 text-sm line-through">฿2,500.00</p>
+                        <p class="text-green-600 font-bold text-sm">Save 5% (฿4.75/credit)</p>
+                        <p class="text-lg font-bold text-slate-800 mt-2">฿2,375.00</p>
+                    </div>
+                </div>
+
+                <!-- Topup 3 -->
+                <div onclick="selectPlan(this, 'Agency Package (One-time)', '9,000.00', 'Pay with Omise')" class="plan-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer text-center flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Agency</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">2,000 Credits</div>
+                        <p class="text-slate-500 text-sm line-through">฿10,000.00</p>
+                        <p class="text-green-600 font-bold text-sm">Save 10% (฿4.50/credit)</p>
+                        <p class="text-lg font-bold text-slate-800 mt-2">฿9,000.00</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div id="kolify-cta-banner"></div>
+    <!-- แถบยืนยันการชำระเงินด้านล่างสุด (Sticky Bottom Bar) -->
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t p-6 flex justify-center z-40 shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.1)]">
+        <div class="flex items-center space-x-6 max-w-5xl w-full justify-between">
+            <div>
+                <h4 id="selected-name" class="font-bold text-slate-500 text-sm uppercase tracking-wider mb-1">Selected: Pro Subscription</h4>
+                <p id="selected-price" class="text-3xl font-black text-slate-800">฿7,000.00</p>
+            </div>
+            <!-- ปุ่มชำระเงิน -->
+            <button onclick="processPayment()" id="pay-btn" class="gradient-bg text-white px-12 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition transform hover:scale-105 flex items-center">
+                Subscribe via Omise
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript สำหรับสลับแพ็กเกจ -->
+    <script>
+        function selectPlan(element, planName, price, buttonText) {
+            // 1. ลบคลาส selected-card ออกจากการ์ดทุกใบ
+            const allCards = document.querySelectorAll('.plan-card');
+            allCards.forEach(card => {
+                card.classList.remove('selected-card', 'border-purple-500', 'border-2');
+                card.classList.add('border-slate-200');
+            });
+
+            // 2. ใส่คลาส selected-card ให้ใบที่ถูกคลิก
+            element.classList.remove('border-slate-200');
+            element.classList.add('selected-card', 'border-purple-500', 'border-2');
+
+            // 3. อัปเดตข้อมูลในแถบด้านล่างสุด
+            document.getElementById('selected-name').innerText = `Selected: ${planName}`;
+            document.getElementById('selected-price').innerText = `฿${price}`;
+            document.getElementById('pay-btn').innerText = buttonText;
+        }
+
+        function processPayment() {
+            // จำลองการชำระเงินสำเร็จ และพาเด้งกลับไปหน้า Workspace
+            alert('Redirecting to Omise Payment Gateway... \n\n(Demo: Payment Successful! Credits added.)');
+            window.location.href = 'workspace.html';
+        }
+    </script>
+    <!-- สคริปต์เรียกแบนเนอร์ CTA -->
+    <script src="banner.js"></script>
 </body>
 </html>
