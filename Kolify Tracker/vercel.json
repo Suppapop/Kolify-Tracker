@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/workspace_guest.html"
+      "destination": "/workspace_guest.html",
+      "permanent": false
     }
   ]
 }
