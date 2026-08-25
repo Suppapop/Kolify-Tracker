@@ -15,10 +15,10 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 relative">
 
-    <!-- NAVBAR -->
-    <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
+    <!-- NAVBAR (เวอร์ชัน User ล็อกอินแล้ว) -->
+    <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-40">
         <div class="flex items-center space-x-6">
             <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12" onerror="this.style.display='none'">
             <span class="font-bold text-xl tracking-tight text-slate-800">Kolify <span class="text-slate-400 font-normal">Tracker</span></span>
@@ -26,47 +26,56 @@
             <a href="history.html" class="text-slate-600 hover:text-blue-600 font-medium">History (DB)</a>
         </div>
         <div class="flex items-center space-x-4">
-            <div class="bg-slate-100 rounded-full py-2 px-4 flex items-center shadow-inner">
-                <span class="font-semibold text-slate-800 mr-2">🪙 1,250 Credits</span>
+            <!-- 🎁 ระบบ Free-Trial 20 Credits -->
+            <div class="bg-green-50 border border-green-200 rounded-full py-2 px-4 flex items-center shadow-inner cursor-help" title="Free trial credits for new users">
+                <span class="font-bold text-green-700 mr-2">🎁 20 Free Credits</span>
             </div>
             <a href="topup.html" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 transition shadow-sm">Top Up</a>
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500"></div>
+            <!-- รูป Profile ตัวแทนว่าล็อกอินแล้ว -->
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500 shadow-sm border-2 border-white"></div>
         </div>
     </nav>
 
+    <!-- 🎨 Graphic Landing Page Placeholder (ดีไซน์ใหม่ด้านบนสุด) -->
+    <div class="relative w-full max-w-[95%] mx-auto h-72 mt-8 rounded-3xl overflow-hidden shadow-lg flex items-center justify-center bg-slate-900 group">
+        <!-- Background Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-800 via-indigo-900 to-slate-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+        
+        <div class="relative z-10 text-center">
+            <h2 class="text-4xl font-black text-white mb-4 tracking-tight">Welcome to Kolify Tracker</h2>
+            <p class="text-slate-300 text-lg max-w-2xl mx-auto">
+                [ Place your beautiful illustration or landing page graphic here. ]<br>
+                Scroll down to start tracking your influencer campaigns.
+            </p>
+        </div>
+    </div>
+
+    <!-- เนื้อหา Workspace หลัก -->
     <div class="p-8 max-w-[95%] mx-auto">
+        
+        <!-- Campaign Name Box -->
         <div class="bg-white p-6 rounded-xl shadow-sm border mb-6 flex justify-between items-center">
             <div class="w-1/3">
                 <label class="block text-sm font-semibold text-slate-600 mb-2">Campaign Name</label>
                 <input type="text" value="Summer Launch 2026" class="w-full text-xl p-2 border-b-2 border-slate-200 focus:outline-none focus:border-purple-500 bg-transparent font-bold">
             </div>
-            <button class="bg-slate-800 text-white px-6 py-2 rounded-lg font-medium shadow-sm hover:bg-slate-700">Download Template</button>
+            <button class="bg-slate-800 text-white px-6 py-2 rounded-lg font-medium shadow-sm hover:bg-slate-700 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download Template
+            </button>
         </div>
 
         <div class="bg-white p-8 rounded-xl shadow-sm border mb-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold">Data Input</h3>
+                <h3 class="text-lg font-bold text-slate-800">Data Input & Preview</h3>
                 <div class="flex space-x-2">
                     <button class="px-4 py-1 bg-slate-800 text-white rounded font-medium shadow-sm">TikTok</button>
                     <button class="px-4 py-1 bg-slate-50 text-slate-400 rounded font-medium cursor-not-allowed border border-dashed" title="Coming Soon">IG / FB</button>
                 </div>
             </div>
 
-            <!-- 🔥 เอากล่อง Upload File (Drag & Drop) กลับมาแล้ว! 🔥 -->
-            <div class="border-2 border-dashed border-slate-300 rounded-xl p-10 flex flex-col items-center justify-center mb-6 bg-slate-50 hover:bg-purple-50 transition cursor-pointer group">
-                <div class="text-4xl mb-3 transform group-hover:-translate-y-1 transition">📁</div>
-                <p class="font-semibold text-slate-600">Drag & Drop your filled Excel file here</p>
-                <p class="text-sm text-slate-400 mt-1">AI will auto-map your columns format automatically.</p>
-                <button class="mt-4 px-4 py-2 border border-slate-300 rounded-lg bg-white shadow-sm font-medium hover:bg-slate-50">Browse Files</button>
-            </div>
-
-            <div class="flex items-center my-6">
-                <div class="flex-grow border-t border-slate-200"></div>
-                <span class="mx-4 text-slate-400 text-xs font-bold uppercase tracking-wider">Preview & Manual Input</span>
-                <div class="flex-grow border-t border-slate-200"></div>
-            </div>
-
-            <!-- Table (กว้างขึ้น เลื่อนซ้ายขวาได้ และมี Data ครบทุกมิติ) -->
+            <!-- 📊 นำ Table (Preview & Manual Input) ขึ้นมาไว้ด้านบนสุดของส่วน Data Input -->
             <div class="overflow-x-auto pb-4">
                 <table class="w-full text-left border-collapse whitespace-nowrap">
                     <thead>
@@ -108,7 +117,6 @@
                             <td class="p-3 bg-slate-50 font-mono">45</td>
                             <td class="p-3 bg-slate-50 font-mono text-slate-500">2026-08-12</td>
                         </tr>
-                        <!-- โพสต์ใหม่ (ข้อมูลเป็นขีด -) -->
                         <tr class="border-b border-slate-100 hover:bg-slate-50">
                             <td class="p-3 font-semibold">@foodie_bkk</td>
                             <td class="p-3 relative"><input type="text" value="https://vt.tiktok.com/Z3/" class="w-48 border p-1 rounded text-blue-600 bg-slate-50"></td>
@@ -133,7 +141,7 @@
                             <td class="p-3 text-slate-400">-</td>
                             <td class="p-3 text-slate-400">-</td>
                         </tr>
-                        <!-- ลิงก์พัง (Error) -->
+                        <!-- แถวสถานะ Invalid Link -->
                         <tr class="border-b border-slate-100 bg-red-50 hover:bg-red-100 transition">
                             <td class="p-3 font-semibold text-red-700">@gaming_god</td>
                             <td class="p-3 relative">
@@ -152,9 +160,25 @@
                     </tbody>
                 </table>
             </div>
-            <button class="mt-4 text-blue-600 font-bold text-sm hover:underline">+ Add New Row</button>
+            <button class="mb-8 text-blue-600 font-bold text-sm hover:underline">+ Add New Row</button>
+
+            <!-- เส้นคั่น -->
+            <div class="flex items-center mb-6">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="mx-4 text-slate-400 text-xs font-bold uppercase tracking-wider">Or Upload Bulk Data</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <!-- 📥 ย้ายกล่อง Upload File (Drag & Drop) ลงมาด้านล่าง และปรับให้เล็กลง -->
+            <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-purple-50 hover:border-purple-300 transition cursor-pointer group w-2/3 mx-auto">
+                <div class="text-3xl mb-2 transform group-hover:-translate-y-1 transition">📁</div>
+                <p class="font-semibold text-slate-600 text-sm">Drag & Drop your filled Excel file here</p>
+                <button class="mt-3 px-4 py-1.5 border border-slate-300 rounded-lg bg-white shadow-sm font-medium hover:bg-slate-50 text-sm">Browse Files</button>
+            </div>
+
         </div>
 
+        <div id="kolify-cta-banner"></div>
         <!-- Sticky Bottom Bar -->
         <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-center z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
             <div class="flex items-center space-x-6 max-w-[95%] w-full justify-between">
@@ -167,13 +191,16 @@
                         <option>Standard Track (1 Credit / Link) = 50 Credits</option>
                         <option>Auto 7-Days (3 Credits / Link) = 150 Credits</option>
                     </select>
+                    <!-- โค้ดปุ่มแบบล็อกอินแล้ว วิ่งตรงไปหน้าโหลดข้อมูลเลย (ไม่มี Pop-up) -->
                     <a href="tracking.html" class="gradient-bg text-white px-10 py-3 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition transform flex items-center">
                         Start Tracking
                     </a>
                 </div>
             </div>
         </div>
-        <div class="h-32"></div> <!-- Spacer -->
+        <div class="h-32"></div> <!-- Spacer เว้นระยะด้านล่าง -->
     </div>
+    <!-- สคริปต์เรียกแบนเนอร์ CTA -->
+    <script src="banner.js"></script>
 </body>
 </html>
