@@ -3,235 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Try Workspace - Kolify Tracker</title>
+    <title>Kolify Tracker - Try It Free</title>
+    
+    <!-- 🌟 เปลี่ยนฟอนต์เป็น Sarabun ตาม Kolify Discovery 🌟 -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind & Chart.js -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        :root {
+            --kolify-blue: #2563eb;
+            --kolify-purple: #8b5cf6;
+            --kolify-pink: #ec4899;
+            --bg-gray: #F8FAFC;
+            --neon-glow: 0 0 25px rgba(139, 92, 246, 0.5);
+        }
+
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-gray); color: #1e293b; overflow-x: hidden; }
         .gradient-bg { background: linear-gradient(135deg, #FF4B2B, #8A2387, #4A00E0); }
-        /* แต่ง Scrollbar ให้สวยงาม */
-        ::-webkit-scrollbar { height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; rounded: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* ================= HERO SECTION (ดีไซน์จาก Kolify Discovery) ================= */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(88,28,135,0.95) 100%), url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 85vh; padding: 120px 20px 150px;
+            display: flex; flex-direction: column; align-items: center; text-align: center; color: white; position: relative; overflow: hidden;
+        }
+        
+        .hero-section::before, .hero-section::after { content: ''; position: absolute; border-radius: 50%; filter: blur(90px); z-index: 0; animation: float 10s infinite ease-in-out alternate; }
+        .hero-section::before { width: 450px; height: 450px; background: rgba(236, 72, 153, 0.25); top: -100px; left: -150px; }
+        .hero-section::after { width: 550px; height: 550px; background: rgba(59, 130, 246, 0.25); bottom: -150px; right: -150px; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+
+        .hero-title { font-size: 4rem; font-weight: 800; margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; }
+        .text-gradient {
+            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradientFlow 5s ease infinite;
+        }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .hero-subtitle { font-size: 1.25rem; max-width: 700px; margin-bottom: 40px; color: #cbd5e1; line-height: 1.6; }
+
+        /* ================= INPUT GLASS CARD (คงเดิม 100%) ================= */
+        .interactive-card {
+            background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 40px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+            max-width: 800px; width: 100%; position: relative; z-index: 10; margin-top: 10px;
+            transition: transform 0.3s;
+        }
+        .interactive-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.4); }
+
+        .input-row { display: flex; gap: 15px; margin-bottom: 18px; }
+        .hero-input { flex-grow: 1; padding: 16px 20px; border-radius: 12px; border: 2px solid transparent; background: rgba(255,255,255,0.95); font-size: 16px; color: #1e293b; outline: none; transition: 0.3s; font-weight: 500;}
+        .hero-input:focus { background: white; border-color: var(--kolify-purple); box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+
+        .btn-track {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 18px 40px; border-radius: 12px; font-weight: 800; font-size: 18px; border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); width: 100%; margin-top: 15px; box-shadow: 0 10px 20px rgba(236,72,153,0.3); letter-spacing: 0.5px;
+        }
+        .btn-track:hover { transform: translateY(-3px); box-shadow: var(--neon-glow); background: linear-gradient(135deg, #f472b6, #a855f7); }
+
+        /* ================= PRICING SECTION (คงเดิม 100%) ================= */
+        .pricing-section { padding: 100px 20px; background: white; position: relative; }
+        .pricing-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, #e2e8f0, transparent); }
+        .price-card { background: white; padding: 40px; border-radius: 24px; border: 1px solid #e2e8f0; text-align: left; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);}
+        .price-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); border-color: #cbd5e1;}
+        .price-card.popular { border: 2px solid #8b5cf6; box-shadow: 0 20px 40px -10px rgba(139,92,246,0.25); transform: scale(1.05); z-index: 10;}
+        .price-card.popular:hover { transform: scale(1.05) translateY(-10px); box-shadow: var(--neon-glow); }
+        .popular-badge { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 8px 24px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(236,72,153,0.3);}
+        
+        /* Loading Animation */
+        @keyframes custom-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spin-slow { animation: custom-spin 2s linear infinite; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-slate-800 relative">
 
-    <!-- NAVBAR (เวอร์ชัน Guest ยังไม่ล็อกอิน) -->
-    <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-40">
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm border-b border-slate-100 px-8 py-4 flex justify-between items-center fixed top-0 w-full z-50 transition-all duration-300 backdrop-blur-md bg-opacity-90">
         <div class="flex items-center space-x-6">
             <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12" onerror="this.style.display='none'">
-            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify <span class="text-slate-400 font-normal">Tracker</span></span>
+            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify <span class="text-slate-400 font-normal" data-i18n="nav_title">Tracker</span></span>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="index.html" class="text-slate-600 hover:text-blue-600 font-bold px-4 py-2">Log in</a>
-            <a href="index.html" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-slate-700 transition shadow-sm">Sign Up Free</a>
+            <!-- 🌟 ปุ่มสลับภาษา TH/ENG 🌟 -->
+            <button onclick="toggleLang()" class="flex items-center justify-center border-2 border-slate-200 text-slate-600 font-bold px-3 py-1.5 rounded-lg hover:border-blue-600 hover:text-blue-600 transition text-sm mr-2">
+                TH / ENG
+            </button>
+            <a href="index.html" class="text-slate-600 hover:text-purple-600 font-bold px-4 py-2 transition" data-i18n="nav_login">Log in</a>
+            <a href="index.html" class="bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-700 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5" data-i18n="nav_signup">Sign Up Free</a>
         </div>
     </nav>
 
-    <!-- 🎨 Graphic Landing Page Placeholder (ดีไซน์ใหม่ด้านบนสุด) -->
-    <div class="relative w-full max-w-[95%] mx-auto h-72 mt-8 rounded-3xl overflow-hidden shadow-lg flex items-center justify-center bg-slate-900 group">
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-r from-purple-800 via-indigo-900 to-slate-900 opacity-90"></div>
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-        
-        <div class="relative z-10 text-center">
-            <h2 class="text-4xl font-black text-white mb-4 tracking-tight">Welcome to Kolify Tracker</h2>
-            <p class="text-slate-300 text-lg max-w-2xl mx-auto">
-                [ Place your beautiful illustration or landing page graphic here. ]<br>
-                Scroll down to start tracking your influencer campaigns.
-            </p>
+    <!-- ================= HERO & INTERACTIVE INPUT ================= -->
+    <section class="hero-section mt-[72px]">
+        <div class="relative z-10 flex flex-col items-center text-center max-w-4xl">
+            <!-- 🌟 โลโก้ด้านบนสุด 🌟 -->
+            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-24 h-24 mb-6 object-contain" style="filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));">
+            
+            <h1 class="hero-title" data-i18n="hero_title">Extract Campaign Data <br><span class="text-gradient">In Seconds.</span></h1>
+            <p class="hero-subtitle" data-i18n="hero_subtitle">The ultimate Micro SaaS for instant influencer campaign tracking.<br>Try our engine for free. Enter up to 3 TikTok links below.</p>
         </div>
-    </div>
 
-    <!-- เนื้อหา Workspace หลัก -->
-    <div class="p-8 max-w-[95%] mx-auto">
-        
-        <!-- Campaign Name Box -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border mb-6 flex justify-between items-center">
-            <div class="w-1/3">
-                <label class="block text-sm font-semibold text-slate-600 mb-2">Campaign Name</label>
-                <input type="text" value="Summer Launch 2026" class="w-full text-xl p-2 border-b-2 border-slate-200 focus:outline-none focus:border-purple-500 bg-transparent font-bold">
+        <div class="interactive-card">
+            <div class="input-row group">
+                <div class="bg-slate-800 text-white w-14 flex items-center justify-center rounded-xl font-black text-xl group-hover:bg-purple-600 transition">1</div>
+                <input type="text" class="hero-input" value="https://vt.tiktok.com/Z1/" placeholder="Paste TikTok video link here...">
             </div>
-            <button class="bg-slate-800 text-white px-6 py-2 rounded-lg font-medium shadow-sm hover:bg-slate-700 flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download Template
+            <div class="input-row group">
+                <div class="bg-slate-800 text-white w-14 flex items-center justify-center rounded-xl font-black text-xl group-hover:bg-purple-600 transition">2</div>
+                <input type="text" class="hero-input" value="https://vt.tiktok.com/Z2/" placeholder="Paste TikTok video link here...">
+            </div>
+            <div class="input-row group">
+                <div class="bg-slate-800 text-white w-14 flex items-center justify-center rounded-xl font-black text-xl group-hover:bg-purple-600 transition">3</div>
+                <input type="text" class="hero-input" placeholder="Paste TikTok video link here...">
+            </div>
+            
+            <button onclick="startDemoTracking()" class="btn-track flex items-center justify-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span data-i18n="btn_track">Track Now (Free Trial)</span>
             </button>
         </div>
+    </section>
 
-        <div class="bg-white p-8 rounded-xl shadow-sm border mb-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-slate-800">Data Input & Preview</h3>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-1 bg-slate-800 text-white rounded font-medium shadow-sm">TikTok</button>
-                    <button class="px-4 py-1 bg-slate-50 text-slate-400 rounded font-medium cursor-not-allowed border border-dashed" title="Coming Soon">IG / FB</button>
+    <!-- ================= LOADING OVERLAY ================= -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900 bg-opacity-95 z-[60] hidden flex-col justify-center items-center backdrop-blur-md transition-opacity duration-300 opacity-0">
+        <div class="relative w-28 h-28 mb-8">
+            <img src="kolify_logo_color.png" alt="Loading" class="w-full h-full object-contain spin-slow">
+        </div>
+        <h2 class="text-4xl font-black text-white mb-3 tracking-tight">Extracting Data...</h2>
+        <p class="text-slate-400 font-medium text-lg">Scraping engagement and analyzing sentiment.</p>
+    </div>
+
+    <!-- ================= DASHBOARD RESULT ================= -->
+    <section id="demoDashboard" class="p-8 max-w-[95%] mx-auto pb-16 hidden mt-8">
+        <div class="flex justify-between items-center mb-8 bg-white p-8 rounded-2xl border shadow-sm relative overflow-hidden fade-in">
+            <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-purple-50 to-transparent"></div>
+            <div class="relative z-10">
+                <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Demo Report</p>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Trial Campaign Result</h1>
+                <p class="text-slate-500 font-medium mt-1">Tracked: Just now • 2 Posts Analyzed</p>
+            </div>
+            <div class="flex space-x-4 relative z-10">
+                <button onclick="openLoginModal()" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-slate-700 hover:-translate-y-1 flex items-center transition-all">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-6 mb-8 fade-in" style="animation-delay: 0.1s;">
+            <div class="bg-white p-8 rounded-2xl border shadow-sm relative overflow-hidden group hover:shadow-lg transition-shadow">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-[#FF4B2B]"></div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-wider">Total Views</p>
+                <p class="text-4xl font-black mt-3 text-slate-800 tracking-tight">1,295,100</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border shadow-sm relative overflow-hidden group hover:shadow-lg transition-shadow">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-[#FF416C]"></div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-wider">Total Likes</p>
+                <p class="text-4xl font-black mt-3 text-slate-800 tracking-tight">118,205</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border shadow-sm relative overflow-hidden group hover:shadow-lg transition-shadow">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-[#8A2387]"></div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-wider">Total Comments</p>
+                <p class="text-4xl font-black mt-3 text-slate-800 tracking-tight">3,240</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border shadow-sm relative overflow-hidden group hover:shadow-lg transition-shadow">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-[#4A00E0]"></div>
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-wider">Avg. Engagement</p>
+                <p class="text-4xl font-black mt-3 text-indigo-600 tracking-tight">9.37%</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6 mb-8 fade-in" style="animation-delay: 0.2s;">
+            <div class="col-span-2 bg-white p-8 rounded-2xl border shadow-sm">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 tracking-tight">Campaign Growth Overview</h3>
+                <div class="relative h-72 w-full"><canvas id="overviewChart"></canvas></div>
+            </div>
+            <div class="col-span-1 bg-white p-8 rounded-2xl border shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Sentiment</h3>
+                    <span class="bg-purple-50 text-purple-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">AI Scraped</span>
+                </div>
+                <div class="relative flex-grow flex items-center justify-center h-56 w-full">
+                    <canvas id="sentimentChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                        <span class="text-3xl font-black text-green-500 tracking-tighter">72%</span><span class="text-xs text-slate-400 font-bold mt-1">POSITIVE</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 📊 นำ Table (Preview & Manual Input) ขึ้นมาไว้ด้านบน -->
+        <div class="bg-white p-8 rounded-2xl border shadow-sm fade-in" style="animation-delay: 0.3s;">
+            <h3 class="text-xl font-bold text-slate-800 mb-6 tracking-tight">Tracked Links (2/3)</h3>
             <div class="overflow-x-auto pb-4">
-                <table class="w-full text-left border-collapse whitespace-nowrap">
+                <table class="w-full text-left whitespace-nowrap">
                     <thead>
-                        <tr class="bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                            <th class="p-3 rounded-tl-lg">Influencer</th>
-                            <th class="p-3">Video Link</th>
-                            <th class="p-3">Followers</th>
-                            <th class="p-3">Cat/Tags</th>
-                            <th class="p-3 bg-blue-50">Old Views</th>
-                            <th class="p-3 bg-blue-50">Old Likes</th>
-                            <th class="p-3 bg-blue-50">Comments</th>
-                            <th class="p-3 bg-blue-50">Shares</th>
-                            <th class="p-3 bg-blue-50">Saves</th>
-                            <th class="p-3 bg-blue-50 rounded-tr-lg">Date Post</th>
+                        <tr class="text-slate-400 text-xs font-bold uppercase border-b border-slate-200">
+                            <th class="pb-4">Influencer</th><th class="pb-4">Views</th><th class="pb-4">Likes</th><th class="pb-4">Comments</th><th class="pb-4">Shares</th><th class="pb-4 text-right">Status</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm">
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="p-3 font-semibold">@john_doe</td>
-                            <td class="p-3 relative"><input type="text" value="https://vt.tiktok.com/Z1/" class="w-48 border p-1 rounded text-blue-600 bg-slate-50"></td>
-                            <td class="p-3">1,250,000</td>
-                            <td class="p-3 text-xs text-slate-500">Tech, Hero</td>
-                            <td class="p-3 bg-slate-50 font-mono">1,100,000</td>
-                            <td class="p-3 bg-slate-50 font-mono">110,000</td>
-                            <td class="p-3 bg-slate-50 font-mono">3,120</td>
-                            <td class="p-3 bg-slate-50 font-mono">540</td>
-                            <td class="p-3 bg-slate-50 font-mono">1,200</td>
-                            <td class="p-3 bg-slate-50 font-mono text-slate-500">2026-08-10</td>
-                        </tr>
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="p-3 font-semibold">@sarah_style</td>
-                            <td class="p-3 relative"><input type="text" value="https://vt.tiktok.com/Z2/" class="w-48 border p-1 rounded text-blue-600 bg-slate-50"></td>
-                            <td class="p-3">45,000</td>
-                            <td class="p-3 text-xs text-slate-500">Beauty</td>
-                            <td class="p-3 bg-slate-50 font-mono">45,000</td>
-                            <td class="p-3 bg-slate-50 font-mono">3,200</td>
-                            <td class="p-3 bg-slate-50 font-mono">120</td>
-                            <td class="p-3 bg-slate-50 font-mono">15</td>
-                            <td class="p-3 bg-slate-50 font-mono">45</td>
-                            <td class="p-3 bg-slate-50 font-mono text-slate-500">2026-08-12</td>
-                        </tr>
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="p-3 font-semibold">@foodie_bkk</td>
-                            <td class="p-3 relative"><input type="text" value="https://vt.tiktok.com/Z3/" class="w-48 border p-1 rounded text-blue-600 bg-slate-50"></td>
-                            <td class="p-3">120,000</td>
-                            <td class="p-3 text-xs text-slate-500">Food</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                        </tr>
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="p-3 font-semibold">@travel_guy</td>
-                            <td class="p-3 relative"><input type="text" value="https://vt.tiktok.com/Z4/" class="w-48 border p-1 rounded text-blue-600 bg-slate-50"></td>
-                            <td class="p-3">890,000</td>
-                            <td class="p-3 text-xs text-slate-500">Travel</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                            <td class="p-3 text-slate-400">-</td>
-                        </tr>
-                        <!-- แถวสถานะ Invalid Link -->
-                        <tr class="border-b border-slate-100 bg-red-50 hover:bg-red-100 transition">
-                            <td class="p-3 font-semibold text-red-700">@gaming_god</td>
-                            <td class="p-3 relative">
-                                <input type="text" value="https://youtube.com/..." class="w-48 border border-red-300 p-1 rounded text-red-600 bg-white">
-                                <p class="text-xs text-red-500 mt-1 font-bold">Invalid Link</p>
+                        <tr class="border-b border-slate-50">
+                            <td class="py-5 font-bold text-slate-800 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden"><img src="https://ui-avatars.com/api/?name=JD&background=f1f5f9&color=475569" class="w-full h-full object-cover"></div>
+                                <div>@john_doe <br><span class="text-xs font-normal text-slate-500">Tech</span></div>
                             </td>
-                            <td class="p-3 text-red-700">8,500</td>
-                            <td class="p-3 text-xs text-red-700">Gaming</td>
-                            <td class="p-3 text-red-400">-</td>
-                            <td class="p-3 text-red-400">-</td>
-                            <td class="p-3 text-red-400">-</td>
-                            <td class="p-3 text-red-400">-</td>
-                            <td class="p-3 text-red-400">-</td>
-                            <td class="p-3 text-red-400">-</td>
+                            <td class="py-5 font-mono font-medium text-lg">1,250,000</td><td class="py-5 font-mono font-medium">115,000</td>
+                            <td class="py-5 font-mono font-medium">3,120</td><td class="py-5 font-mono font-medium">600</td>
+                            <td class="py-5 text-right"><span class="text-blue-600 text-xs font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">✧ Fresh Track</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-50">
+                            <td class="py-5 font-bold text-slate-800 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden"><img src="https://ui-avatars.com/api/?name=SS&background=fce7f3&color=db2777" class="w-full h-full object-cover"></div>
+                                <div>@sarah_style <br><span class="text-xs font-normal text-slate-500">Beauty</span></div>
+                            </td>
+                            <td class="py-5 font-mono font-medium text-lg">45,100</td><td class="py-5 font-mono font-medium">3,205</td>
+                            <td class="py-5 font-mono font-medium">120</td><td class="py-5 font-mono font-medium">15</td>
+                            <td class="py-5 text-right"><span class="text-blue-600 text-xs font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">✧ Fresh Track</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <button class="mb-8 text-blue-600 font-bold text-sm hover:underline">+ Add New Row</button>
-
-            <!-- เส้นคั่น -->
-            <div class="flex items-center mb-6">
-                <div class="flex-grow border-t border-slate-200"></div>
-                <span class="mx-4 text-slate-400 text-xs font-bold uppercase tracking-wider">Or Upload Bulk Data</span>
-                <div class="flex-grow border-t border-slate-200"></div>
-            </div>
-
-            <!-- 📥 ย้ายกล่อง Upload File (Drag & Drop) ลงมาด้านล่าง และปรับให้เล็กลง -->
-            <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-purple-50 hover:border-purple-300 transition cursor-pointer group w-2/3 mx-auto">
-                <div class="text-3xl mb-2 transform group-hover:-translate-y-1 transition">📁</div>
-                <p class="font-semibold text-slate-600 text-sm">Drag & Drop your filled Excel file here</p>
-                <button class="mt-3 px-4 py-1.5 border border-slate-300 rounded-lg bg-white shadow-sm font-medium hover:bg-slate-50 text-sm">Browse Files</button>
-            </div>
-
+            
+            <button onclick="openLoginModal()" class="mt-6 w-full py-5 border-2 border-dashed border-purple-300 text-purple-600 rounded-xl font-bold hover:bg-purple-50 transition flex justify-center items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Add More Links to Track (Requires Free Account)
+            </button>
         </div>
+    </section>
 
-        <div id="kolify-cta-banner"></div>
-        <!-- Sticky Bottom Bar -->
-        <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-center z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-            <div class="flex items-center space-x-6 max-w-[95%] w-full justify-between">
-                <div>
-                    <p class="font-bold text-slate-800 text-lg">Ready to Track: 50 Links</p>
-                    <p class="text-sm text-slate-500"><span class="text-green-600 font-bold">50 Valid</span> | <span class="text-red-500 font-bold">1 Invalid (Skipped)</span></p>
+    <!-- ================= FULL PRICING SECTION ================= -->
+    <section class="pricing-section">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-slate-800 mb-4 tracking-tight">Scale Your Tracking</h2>
+                <p class="text-slate-500 text-lg max-w-2xl mx-auto">1 Credit = 1 Link Tracking. Save more with monthly subscriptions or pay as you go.</p>
+            </div>
+
+            <!-- Monthly Subscriptions -->
+            <div class="mb-20">
+                <div class="flex items-center justify-center mb-8">
+                    <h3 class="text-2xl font-bold text-slate-800 tracking-tight">Monthly Subscriptions</h3>
+                    <span class="ml-4 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Best Value</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <select class="border-2 p-3 rounded-lg font-bold text-slate-600 bg-slate-50">
-                        <option>Standard Track (1 Credit / Link) = 50 Credits</option>
-                    </select>
-                    <!-- ปุ่มเรียก Pop-up Modal สำหรับ Guest -->
-                    <button onclick="openLoginModal()" class="gradient-bg text-white px-10 py-3 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition transform flex items-center">
-                        Start Tracking
-                    </button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div onclick="openLoginModal()" class="price-card cursor-pointer group">
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Basic</h3>
+                        <p class="text-sm text-slate-400 mb-4">Ideal for freelancers</p>
+                        <div class="text-3xl font-black gradient-text mb-1">500 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-slate-500 text-sm">~ ฿4.00 per credit</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800 mb-6">฿2,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                        <button class="w-full py-3 rounded-xl font-bold text-slate-600 bg-slate-100 group-hover:bg-slate-800 group-hover:text-white transition">Sign Up Free</button>
+                    </div>
+
+                    <div onclick="openLoginModal()" class="price-card popular cursor-pointer group">
+                        <div class="popular-badge">MOST POPULAR</div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Pro</h3>
+                        <p class="text-sm text-slate-400 mb-4">Perfect for growing agencies</p>
+                        <div class="text-3xl font-black gradient-text mb-1">2,000 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-green-600 font-bold text-sm">Save 30% (~ ฿3.50 per credit)</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800 mb-6">฿7,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                        <button class="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md group-hover:shadow-xl transition">Sign Up Free</button>
+                    </div>
+
+                    <div onclick="openLoginModal()" class="price-card cursor-pointer group">
+                        <h3 class="text-xl font-bold text-slate-700 mb-1">Enterprise</h3>
+                        <p class="text-sm text-slate-400 mb-4">For large-scale operations</p>
+                        <div class="text-3xl font-black gradient-text mb-1">10,000 Credits<span class="text-lg text-slate-400 font-normal">/mo</span></div>
+                        <p class="text-green-600 font-bold text-sm">Save 40% (~ ฿3.00 per credit)</p>
+                        <div class="my-6 border-t border-slate-100"></div>
+                        <p class="text-xl font-bold text-slate-800 mb-6">฿30,000.00 <span class="text-sm font-normal text-slate-500">/ month</span></p>
+                        <button class="w-full py-3 rounded-xl font-bold text-slate-600 bg-slate-100 group-hover:bg-slate-800 group-hover:text-white transition">Sign Up Free</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pay As You Go -->
+            <div class="mb-12">
+                <div class="flex items-center justify-center mb-8">
+                    <h3 class="text-2xl font-bold text-slate-800 tracking-tight">Pay As You Go</h3>
+                    <span class="ml-4 bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">One-time Top Up</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div onclick="openLoginModal()" class="price-card cursor-pointer group hover:bg-slate-50">
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Starter</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">100 Credits</div>
+                        <p class="text-slate-500 text-sm">฿5.00 per credit</p>
+                        <p class="text-xl font-black text-slate-800 mt-6 mb-6">฿500.00</p>
+                        <button class="w-full py-2.5 rounded-lg font-bold border-2 border-slate-200 text-slate-600 group-hover:border-slate-800 group-hover:text-slate-800 transition">Select</button>
+                    </div>
+
+                    <div onclick="openLoginModal()" class="price-card cursor-pointer group hover:bg-purple-50">
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Pro</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">500 Credits</div>
+                        <p class="text-slate-500 text-sm line-through">฿2,500.00</p>
+                        <p class="text-green-600 font-bold text-sm">Save 5% (฿4.75/credit)</p>
+                        <p class="text-xl font-black text-slate-800 mt-2 mb-6">฿2,375.00</p>
+                        <button class="w-full py-2.5 rounded-lg font-bold border-2 border-slate-200 text-slate-600 group-hover:border-purple-600 group-hover:text-purple-600 transition">Select</button>
+                    </div>
+
+                    <div onclick="openLoginModal()" class="price-card cursor-pointer group hover:bg-slate-50">
+                        <h3 class="text-lg font-bold text-slate-700 mb-2">Agency</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-1">2,000 Credits</div>
+                        <p class="text-slate-500 text-sm line-through">฿10,000.00</p>
+                        <p class="text-green-600 font-bold text-sm">Save 10% (฿4.50/credit)</p>
+                        <p class="text-xl font-black text-slate-800 mt-2 mb-6">฿9,000.00</p>
+                        <button class="w-full py-2.5 rounded-lg font-bold border-2 border-slate-200 text-slate-600 group-hover:border-slate-800 group-hover:text-slate-800 transition">Select</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="h-32"></div>
-    </div>
+    </section>
 
-    <!-- Modal Pop-up (เก็บ Logic เดิมไว้) -->
-    <div id="login-modal" class="fixed inset-0 bg-slate-900 bg-opacity-60 z-50 hidden flex justify-center items-center backdrop-blur-sm transition-opacity opacity-0">
-        <div id="login-modal-content" class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform scale-95 transition-transform duration-300">
-            <div class="mb-6">
-                <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-16 mx-auto mb-4" onerror="this.style.display='none'">
-                <h3 class="text-2xl font-bold text-slate-800">Save Your Progress</h3>
-                <p class="text-slate-500 mt-2 font-medium">Please sign up or log in to track your campaign and view the dashboard results.</p>
+    <!-- Global CTA Banner -->
+    <div id="kolify-cta-banner"></div>
+
+    <!-- ================= LOGIN MODAL ================= -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900 bg-opacity-70 z-[100] hidden flex justify-center items-center backdrop-blur-sm">
+        <div id="login-modal-content" class="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full text-center scale-95 opacity-0 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-500 to-purple-500"></div>
+            <div class="mb-6 mt-2">
+                <h3 class="text-3xl font-black text-slate-800 tracking-tight" data-i18n="modal_title">Unlock Full Access</h3>
+                <p class="text-slate-500 mt-3 font-medium leading-relaxed" data-i18n="modal_sub">Sign up today and get <strong class="text-green-600 bg-green-50 px-2 py-1 rounded">20 Free Credits 🎁</strong> instantly to save your reports and track unlimited campaigns.</p>
             </div>
             <div class="flex flex-col space-y-3 mt-8">
-                <!-- กดแล้วไปหน้า index.html (หน้าล็อกอินหลัก) -->
-                <a href="index.html" class="gradient-bg text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition transform hover:scale-[1.02]">
-                    Sign Up / Log In
+                <a href="index.html" class="bg-slate-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-slate-700 hover:-translate-y-1 transition transform" data-i18n="modal_btn_create">
+                    Create Free Account
                 </a>
-                <button onclick="closeLoginModal()" class="text-slate-400 font-bold py-2 hover:text-slate-600 transition">Cancel</button>
+                <a href="index.html" class="border-2 border-slate-200 text-slate-700 font-bold py-3.5 px-6 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition" data-i18n="modal_btn_login">
+                    Log In to Existing Account
+                </a>
+                <button onclick="closeLoginModal()" class="text-slate-400 font-bold py-2 mt-3 hover:text-slate-600 transition text-sm" data-i18n="modal_btn_later">Maybe Later</button>
             </div>
         </div>
     </div>
 
+    <!-- ================= SCRIPTS ================= -->
     <script>
+        // 🌟 Translation Dictionary 🌟
+        const translations = {
+            en: {
+                nav_title: "Tracker", nav_login: "Log in", nav_signup: "Sign Up Free",
+                hero_title: "Extract Campaign Data <br><span class='text-gradient'>In Seconds.</span>",
+                hero_subtitle: "The ultimate Micro SaaS for instant influencer campaign tracking.<br>Try our engine for free. Enter up to 3 TikTok links below.",
+                btn_track: "Track Now (Free Trial)",
+                modal_title: "Unlock Full Access",
+                modal_sub: "Sign up today and get <strong class='text-green-600 bg-green-50 px-2 py-1 rounded'>20 Free Credits 🎁</strong> instantly to save your reports and track unlimited campaigns.",
+                modal_btn_create: "Create Free Account", modal_btn_login: "Log In to Existing Account", modal_btn_later: "Maybe Later"
+            },
+            th: {
+                nav_title: "Tracker", nav_login: "เข้าสู่ระบบ", nav_signup: "สมัครใช้งานฟรี",
+                hero_title: "ดึงข้อมูลแคมเปญ <br><span class='text-gradient'>ในไม่กี่วินาที</span>",
+                hero_subtitle: "สุดยอด Micro SaaS สำหรับติดตามผลลัพธ์ Influencer ทันที<br>ทดลองใช้ระบบฟรี กรอกลิงก์ TikTok สูงสุด 3 ลิงก์ด้านล่าง",
+                btn_track: "เริ่มดึงข้อมูล (ทดลองฟรี)",
+                modal_title: "เข้าสู่ระบบเพื่อใช้งาน",
+                modal_sub: "สมัครใช้งานวันนี้ รับฟรี <strong class='text-green-600 bg-green-50 px-2 py-1 rounded'>20 Credits 🎁</strong> ทันที เพื่อบันทึกรายงานและติดตามแคมเปญแบบไม่จำกัด",
+                modal_btn_create: "สร้างบัญชีฟรี", modal_btn_login: "เข้าสู่ระบบบัญชีเดิม", modal_btn_later: "ไว้ทีหลัง"
+            }
+        };
+
+        let currentLang = 'en';
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'th' : 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+        }
+
+        function startDemoTracking() {
+            const overlay = document.getElementById('loadingOverlay');
+            const dashboard = document.getElementById('demoDashboard');
+            
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100'); }, 10);
+
+            setTimeout(() => {
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    overlay.classList.remove('flex');
+                    overlay.classList.add('hidden');
+                    
+                    dashboard.classList.remove('hidden');
+                    dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    drawCharts();
+                }, 300);
+            }, 2500);
+        }
+
         function openLoginModal() {
             const modal = document.getElementById('login-modal');
-            const modalContent = document.getElementById('login-modal-content');
+            const content = document.getElementById('login-modal-content');
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-                modalContent.classList.add('scale-100');
-            }, 10);
+            setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
         }
+        
         function closeLoginModal() {
             const modal = document.getElementById('login-modal');
-            const modalContent = document.getElementById('login-modal-content');
-            modal.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
+            const content = document.getElementById('login-modal-content');
+            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
+
+        let chartsRendered = false;
+        function drawCharts() {
+            if(chartsRendered) return;
+            chartsRendered = true;
+
+            const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+            let grad = ctxOverview.createLinearGradient(0, 0, 0, 400);
+            grad.addColorStop(0, 'rgba(79, 70, 229, 0.4)'); grad.addColorStop(1, 'rgba(79, 70, 229, 0)');
+            new Chart(ctxOverview, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+                    datasets: [{
+                        data: [1000000, 1050000, 1120000, 1180000, 1200000, 1250000, 1295100],
+                        borderColor: '#4F46E5', backgroundColor: grad, borderWidth: 4, fill: true, tension: 0.4, pointRadius: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            });
+
+            const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(ctxSentiment, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Neutral', 'Negative'],
+                    datasets: [{ data: [72, 18, 10], backgroundColor: ['#34D399', '#E2E8F0', '#F87171'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+            });
+        }
     </script>
-    <!-- สคริปต์เรียกแบนเนอร์ CTA -->
     <script src="banner.js"></script>
 </body>
 </html>
