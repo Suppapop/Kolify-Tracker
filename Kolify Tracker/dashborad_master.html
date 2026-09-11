@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kolify Dashboard - Ultimate Local Test</title>
+    
+    <!-- Fonts & CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #F8FAFC; color: #1e293b; margin: 0; padding: 0; }
+        .gradient-bg { background: linear-gradient(135deg, #FF4B2B, #8A2387, #4A00E0); }
+        
+        /* สไตล์ตาราง Raw Data */
+        .raw-data-table th { background-color: #f1f5f9; padding: 14px 16px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; font-size: 11px; text-transform: uppercase; white-space: nowrap;}
+        .raw-data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 13px; white-space: nowrap;}
+        
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #8b5cf6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* ล็อกขนาด Layout ป้องกัน Grid พัง */
+        #pdf-wrapper { overflow-x: auto; padding: 20px 0; background: #e2e8f0; min-height: 100vh;}
+        .pdf-page { width: 1400px; min-width: 1400px; margin: 0 auto 30px auto; background-color: #F8FAFC; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        /* Tab Styles */
+        .tab-btn { padding: 12px 24px; font-weight: 700; border-radius: 12px; transition: all 0.3s; color: #64748b; border: 2px solid transparent; }
+        .tab-btn:hover { background-color: #f1f5f9; color: #0f172a; }
+        .tab-btn.active { background-color: #fff; color: #8b5cf6; border-color: #d8b4fe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50 w-full">
+        <div class="flex items-center space-x-6">
+            <img src="kolify_logo_color.png" alt="Kolify Logo" class="w-12" onerror="this.style.display='none'">
+            <span class="font-bold text-xl tracking-tight text-slate-800">Kolify Tracker</span>
+            <a href="#" class="text-slate-600 hover:text-blue-600 ml-8 font-medium">Workspace</a>
+            <a href="#" class="text-slate-600 hover:text-blue-600 font-medium">History (DB)</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="bg-slate-100 rounded-full py-2 px-4 flex items-center shadow-inner">
+                <span class="font-semibold text-slate-800 mr-2">🪙 1,200 Credits</span>
+            </div>
+            <a href="#" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 transition shadow-sm">Top Up</a>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500 shadow-sm border-2 border-white"></div>
+        </div>
+    </nav>
+
+    <!-- ================= 1. UPLOAD SECTION ================= -->
+    <div id="upload-section" class="max-w-2xl w-full mx-auto mt-20 text-center bg-white p-12 rounded-3xl shadow-xl border border-slate-100 relative z-10">
+        <div class="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-2xl flex items-center justify-center shadow-inner">
+            <span class="text-4xl">📊</span>
+        </div>
+        <h1 class="text-3xl font-black mb-2">Upload Raw Data</h1>
+        <p class="text-slate-500 mb-8">Select your Kolify Tracker CSV file to generate the Master Dashboard.</p>
+        
+        <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+        <button onclick="document.getElementById('csvFileInput').click()" class="gradient-bg text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition transform w-full">
+            Browse .CSV File
+        </button>
+        <div id="loading-indicator" class="hidden mt-8 flex-col items-center justify-center">
+            <div class="loader mb-4"></div>
+            <p class="text-purple-600 font-bold animate-pulse" id="loading-text">Generating Ultimate Dashboard...</p>
+        </div>
+    </div>
+
+    <!-- ================= 2. DASHBOARD WRAPPER ================= -->
+    <div id="dashboard-wrapper" class="hidden" style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 30px 0;">
+        
+        <!-- Tab Navigation -->
+        <div class="flex justify-center mb-6 w-full max-w-[1400px] mx-auto no-print gap-4">
+            <button onclick="switchTab('charts')" id="btn-tab-charts" class="tab-btn active flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Visual Analytics
+            </button>
+            <button onclick="switchTab('table')" id="btn-tab-table" class="tab-btn flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                Raw Data Table
+            </button>
+        </div>
+
+        <div id="pdf-content">
+            
+            <!-- 🔥 CHARTS TAB 🔥 -->
+            <div class="pdf-page tab-content block" id="tab-charts">
+                
+                <!-- =================== CAPTURE PAGE 1 =================== -->
+                <div id="capture-page-1" class="pb-2 bg-[#F8FAFC]">
+                    <!-- HEADER -->
+                    <div class="flex justify-between items-center bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                        <div class="flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                <span class="text-white font-black text-3xl">K</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-purple-600 uppercase tracking-widest mb-1">Campaign Analytics Report</p>
+                                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Wellnova Skin Care</h1>
+                                <p class="text-slate-500 font-medium text-sm mt-1" id="report-meta">Data processed today</p>
+                            </div>
+                        </div>
+                        <button onclick="exportToPDF()" id="exportBtn" class="bg-slate-800 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-slate-700 flex items-center gap-3 transition hover:scale-105 no-print">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Export Full PDF
+                        </button>
+                    </div>
+
+                    <!-- 6 KPI SUMMARY -->
+                    <div class="grid grid-cols-6 gap-5 mb-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Total Views</p>
+                            <p id="kpi-views" class="text-3xl font-black mt-2 text-slate-800">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-pink-500">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Total Likes</p>
+                            <p id="kpi-likes" class="text-3xl font-black mt-2 text-slate-800">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-sky-500">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Total Comments</p>
+                            <p id="kpi-comments" class="text-3xl font-black mt-2 text-slate-800">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-purple-600">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">High Intent (Saves)</p>
+                            <p id="kpi-saves" class="text-3xl font-black mt-2 text-slate-800">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-rose-500">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Avg. ER</p>
+                            <p id="kpi-er" class="text-3xl font-black mt-2 text-rose-600">0%</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-emerald-500">
+                            <p class="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Avg. CPV</p>
+                            <p id="kpi-cpv" class="text-3xl font-black mt-2 text-emerald-600">฿0.00</p>
+                        </div>
+                    </div>
+
+                    <!-- 🏆 TOP PERFORMERS BADGES -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-5 flex items-center gap-2">🏆 Campaign Highlights</h3>
+                        <div class="grid grid-cols-4 gap-5">
+                            <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl flex items-start gap-4">
+                                <div class="text-3xl mt-1">👀</div>
+                                <div class="w-full"><p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Most Views</p><p id="top-views-name" class="font-black text-slate-800 text-base break-words whitespace-normal leading-tight mt-1">@User</p></div>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-100 p-5 rounded-xl flex items-start gap-4">
+                                <div class="text-3xl mt-1">🔥</div>
+                                <div class="w-full"><p class="text-[10px] font-bold text-rose-600 uppercase tracking-wider">Highest ER</p><p id="top-er-name" class="font-black text-slate-800 text-base break-words whitespace-normal leading-tight mt-1">@User</p></div>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-100 p-5 rounded-xl flex items-start gap-4">
+                                <div class="text-3xl mt-1">💾</div>
+                                <div class="w-full"><p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider">Highest Saves</p><p id="top-saves-name" class="font-black text-slate-800 text-base break-words whitespace-normal leading-tight mt-1">@User</p></div>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-xl flex items-start gap-4">
+                                <div class="text-3xl mt-1">💰</div>
+                                <div class="w-full"><p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Best CPV</p><p id="top-cpv-name" class="font-black text-slate-800 text-base break-words whitespace-normal leading-tight mt-1">@User</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🌟 HERO CHARTS -->
+                    <div class="grid grid-cols-3 gap-6 mb-6">
+                        <div class="col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-slate-800">Campaign Growth Overview</h3>
+                                <span class="bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1 rounded-lg">Last 7 Days (Auto-Track)</span>
+                            </div>
+                            <div class="relative w-full" style="height: 280px;"><canvas id="overviewChart"></canvas></div>
+                        </div>
+                        <div class="col-span-1 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-xl font-bold text-slate-800">Sentiment Analysis</h3>
+                                <span class="bg-purple-50 text-purple-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">AI Scraped</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Based on extracted comments</p>
+                            <div class="relative flex-grow flex items-center justify-center w-full" style="height: 200px;">
+                                <canvas id="sentimentChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                                    <span class="text-3xl font-black text-green-500">65%</span>
+                                    <span class="text-[10px] text-slate-400 font-bold uppercase">Positive</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- END CAPTURE PAGE 1 -->
+
+
+                <!-- =================== CAPTURE PAGE 2 (Charts 1-5) =================== -->
+                <div id="capture-page-2" class="pb-2 bg-[#F8FAFC] pt-4">
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4">1. Top 10 Performers (By Views)</h3>
+                            <div class="relative w-full" style="height: 300px;"><canvas id="barViewsChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">2. Engagement Breakdown</h3>
+                            <p class="text-xs text-slate-500 mb-4">Actions driving the engagement</p>
+                            <div class="relative w-full" style="height: 280px;"><canvas id="stackedEngChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1 w-full text-center">3. Audience Intent</h3>
+                            <p class="text-xs text-slate-500 mb-2 w-full text-center">Proportion of all actions</p>
+                            <div class="relative flex-grow flex items-center justify-center w-full max-w-[220px]" style="height: 220px;">
+                                <canvas id="intentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1 w-full text-center">4. KOL Tiers</h3>
+                            <p class="text-xs text-slate-500 mb-2 w-full text-center">Based on Followers count</p>
+                            <div class="relative flex-grow flex items-center justify-center w-full max-w-[220px]" style="height: 220px;">
+                                <canvas id="tierChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1">5. Cost Efficiency (Top 5)</h3>
+                            <p class="text-xs text-slate-500 mb-4">Lowest Cost Per View (CPV)</p>
+                            <div class="relative w-full" style="height: 220px;"><canvas id="cpvChart"></canvas></div>
+                        </div>
+                    </div>
+                </div> <!-- END CAPTURE PAGE 2 -->
+
+
+                <!-- =================== CAPTURE PAGE 3 (Charts 6-10) =================== -->
+                <div id="capture-page-3" class="pb-2 bg-[#F8FAFC] pt-4">
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">6. Reach Efficiency (Followers vs Views)</h3>
+                            <p class="text-xs text-slate-500 mb-4">Spot the 'Hidden Gems' (Low followers, High Views)</p>
+                            <div class="relative w-full" style="height: 300px;"><canvas id="scatterChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">7. Content Format Performance</h3>
+                            <p class="text-xs text-slate-500 mb-4">Average Views by Format Type</p>
+                            <div class="relative w-full" style="height: 300px;"><canvas id="formatChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1">8. Campaign Health</h3>
+                            <p class="text-xs text-slate-500 mb-4">Number of KOLs by ER% Buckets</p>
+                            <div class="relative w-full" style="height: 220px;"><canvas id="erDistChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1">9. View Rate vs ER%</h3>
+                            <p class="text-xs text-slate-500 mb-4">High VR + High ER = True Viral Quality</p>
+                            <div class="relative w-full" style="height: 220px;"><canvas id="vrErChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm w-full">
+                            <h3 class="text-base font-bold text-slate-800 mb-1">10. Best ROI (CPE)</h3>
+                            <p class="text-xs text-slate-500 mb-4">Lowest Cost Per Engagement (Top 5)</p>
+                            <div class="relative w-full" style="height: 220px;"><canvas id="cpeChart"></canvas></div>
+                        </div>
+                    </div>
+                </div> <!-- END CAPTURE PAGE 3 -->
+
+            </div> <!-- END TAB 1 -->
+
+
+            <!-- 🔥 PAGE 4+: RAW DATA TABLE (TAB 2) 🔥 -->
+            <div class="pdf-page tab-content hidden" id="tab-table">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-8 border-b border-slate-200 bg-slate-50 flex justify-between items-center" id="table-header-title">
+                        <div>
+                            <h3 class="text-2xl font-black text-slate-800 mb-1">Detailed Raw Data</h3>
+                            <p class="text-sm text-slate-500">Full metrics for successfully tracked influencers.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 w-full">
+                        <table class="w-full text-left whitespace-nowrap raw-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Influencer</th>
+                                    <th class="text-right">Followers</th>
+                                    <th class="text-right">Cost (฿)</th>
+                                    <th class="text-right">Views</th>
+                                    <th class="text-right">Likes</th>
+                                    <th class="text-right">Cmnts</th>
+                                    <th class="text-right">Shares</th>
+                                    <th class="text-right text-purple-600">Saves</th>
+                                    <th class="text-right text-rose-600">ER (%)</th>
+                                    <th class="text-right text-emerald-600">CPV (฿)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Data Injected Here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- END TAB 2 -->
+
+        </div> <!-- ================= PDF CONTENT END ================= -->
+        
+    </div>
+
+    <!-- Global CTA Banner -->
+    <div id="kolify-cta-banner" class="hidden mt-10"></div>
+
+    <!-- ================= JAVASCRIPT ENGINE ================= -->
+    <script>
+        let charts = [];
+
+        function switchTab(tabId) {
+            document.getElementById('btn-tab-charts').classList.remove('active');
+            document.getElementById('btn-tab-table').classList.remove('active');
+            document.getElementById('btn-tab-' + tabId).classList.add('active');
+
+            document.getElementById('tab-charts').classList.add('hidden');
+            document.getElementById('tab-table').classList.add('hidden');
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+        }
+
+        document.getElementById('csvFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('csvFileInput').previousElementSibling.classList.add('hidden');
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    processCSVData(results.data);
+                }
+            });
+        });
+
+        function cleanNumber(val) {
+            if (!val) return 0;
+            if (typeof val === 'number') return val;
+            let cleaned = val.toString().replace(/,/g, '').replace(/%/g, '').replace(/฿/g, '').trim();
+            if(cleaned === '-' || cleaned === '') return 0;
+            let parsed = parseFloat(cleaned);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        function formatNumber(num) { return num.toLocaleString('en-US'); }
+        function formatMoney(num) { return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+        function processCSVData(data) {
+            let validKOLs = [];
+            let [totalViews, totalLikes, totalComments, totalShares, totalSaves, totalCost, erSum] = [0,0,0,0,0,0,0];
+            
+            let tiers = { macro: 0, mid: 0, micro: 0, nano: 0 };
+            let formats = {};
+            let erBuckets = { '< 2%': 0, '2-5%': 0, '5-10%': 0, '> 10%': 0 };
+
+            data.forEach(row => {
+                const name = row['Name'] || row['name'] || 'Unknown';
+                if (name !== 'Unknown' && row['view']) {
+                    const views = cleanNumber(row['view']);
+                    const likes = cleanNumber(row['Like']);
+                    const comments = cleanNumber(row['Comment']);
+                    const shares = cleanNumber(row['Share']);
+                    const saves = cleanNumber(row['Save']);
+                    const followers = cleanNumber(row['Followers']);
+                    const cost = cleanNumber(row['Cost'] || row['cost'] || 0);
+                    const formatType = row['รูปแบบ'] || row['Format'] || 'Other';
+                    
+                    let erKeys = Object.keys(row).filter(k => k.toLowerCase().includes('engagement') && k.includes('%'));
+                    let erValue = erKeys.length > 0 ? cleanNumber(row[erKeys[0]]) : 0;
+                    
+                    let vrKeys = Object.keys(row).filter(k => k.toLowerCase().includes('view') && k.includes('%'));
+                    let vrValue = vrKeys.length > 0 ? cleanNumber(row[vrKeys[0]]) : 0;
+                    
+                    let cpv = (views > 0 && cost > 0) ? (cost / views) : 0;
+                    let totalEngagements = likes + comments + shares + saves;
+                    let cpe = (totalEngagements > 0 && cost > 0) ? (cost / totalEngagements) : 0;
+
+                    validKOLs.push({ name, views, likes, comments, shares, saves, followers, cost, er: erValue, vr: vrValue, cpv: cpv, cpe: cpe, totalEng: totalEngagements, format: formatType });
+
+                    totalViews += views; totalLikes += likes; totalComments += comments;
+                    totalShares += shares; totalSaves += saves; erSum += erValue; totalCost += cost;
+
+                    if(followers >= 500000) tiers.macro++;
+                    else if(followers >= 100000) tiers.mid++;
+                    else if(followers >= 10000) tiers.micro++;
+                    else tiers.nano++;
+
+                    if(!formats[formatType]) formats[formatType] = { sumViews: 0, count: 0 };
+                    formats[formatType].sumViews += views; formats[formatType].count += 1;
+
+                    if(erValue < 2) erBuckets['< 2%']++;
+                    else if(erValue < 5) erBuckets['2-5%']++;
+                    else if(erValue < 10) erBuckets['5-10%']++;
+                    else erBuckets['> 10%']++;
+                }
+            });
+
+            const avgEr = validKOLs.length > 0 ? (erSum / validKOLs.length).toFixed(2) : 0;
+            const avgCpv = (totalViews > 0 && totalCost > 0) ? (totalCost / totalViews).toFixed(2) : 0;
+
+            let topViewsName = "@N/A"; let topErName = "@N/A"; let topSavesName = "@N/A"; let topCpvName = "@N/A";
+            if (validKOLs.length > 0) {
+                topViewsName = "@" + [...validKOLs].sort((a,b) => b.views - a.views)[0].name;
+                topErName = "@" + [...validKOLs].sort((a,b) => b.er - a.er)[0].name;
+                topSavesName = "@" + [...validKOLs].sort((a,b) => b.saves - a.saves)[0].name;
+                let costEff = [...validKOLs].filter(k => k.cpv > 0).sort((a,b) => a.cpv - b.cpv);
+                topCpvName = costEff.length > 0 ? "@" + costEff[0].name : "N/A";
+            }
+
+            document.getElementById('kpi-views').innerText = formatNumber(totalViews);
+            document.getElementById('kpi-likes').innerText = formatNumber(totalLikes);
+            document.getElementById('kpi-comments').innerText = formatNumber(totalComments);
+            document.getElementById('kpi-saves').innerText = formatNumber(totalSaves);
+            document.getElementById('kpi-er').innerText = avgEr + '%';
+            document.getElementById('kpi-cpv').innerText = '฿' + avgCpv;
+            document.getElementById('report-meta').innerText = `Tracked Data • ${validKOLs.length} Posts Analyzed`;
+            
+            document.getElementById('top-views-name').innerText = topViewsName;
+            document.getElementById('top-er-name').innerText = topErName;
+            document.getElementById('top-saves-name').innerText = topSavesName;
+            document.getElementById('top-cpv-name').innerText = topCpvName;
+
+            validKOLs.sort((a, b) => b.views - a.views);
+            
+            renderTable(validKOLs);
+            renderCharts(validKOLs, totalLikes, totalComments, totalShares, totalSaves, tiers, formats, erBuckets, totalViews);
+
+            setTimeout(() => {
+                document.getElementById('upload-section').classList.add('hidden');
+                document.getElementById('dashboard-wrapper').classList.remove('hidden');
+                document.getElementById('kolify-cta-banner').classList.remove('hidden');
+            }, 800);
+        }
+
+        function renderTable(kols) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            kols.forEach(kol => {
+                let row = `
+                <tr>
+                    <td class="font-bold text-slate-800">@${kol.name}</td>
+                    <td class="text-right font-mono text-slate-500">${formatNumber(kol.followers)}</td>
+                    <td class="text-right font-mono text-slate-500">${kol.cost > 0 ? formatMoney(kol.cost) : '-'}</td>
+                    <td class="text-right font-mono font-bold text-slate-800">${formatNumber(kol.views)}</td>
+                    <td class="text-right font-mono text-slate-600">${formatNumber(kol.likes)}</td>
+                    <td class="text-right font-mono text-slate-600">${formatNumber(kol.comments)}</td>
+                    <td class="text-right font-mono text-slate-600">${formatNumber(kol.shares)}</td>
+                    <td class="text-right font-mono font-bold text-purple-600 bg-purple-50">${formatNumber(kol.saves)}</td>
+                    <td class="text-right font-mono font-black text-rose-600 bg-rose-50">${kol.er}%</td>
+                    <td class="text-right font-mono font-bold text-emerald-600 bg-emerald-50">${kol.cpv > 0 ? formatMoney(kol.cpv) : '-'}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderCharts(kols, tLikes, tComments, tShares, tSaves, tiers, formats, erBuckets, totalViews) {
+            charts.forEach(c => c.destroy());
+            charts = [];
+
+            const top10 = kols.slice(0, 10);
+            const top5 = kols.slice(0, 5);
+
+            // Chart 0.1
+            const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+            let gradientBlue = ctxOverview.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, 'rgba(79, 70, 229, 0.4)'); gradientBlue.addColorStop(1, 'rgba(79, 70, 229, 0)');
+            let mockTrend = [totalViews*0.6, totalViews*0.65, totalViews*0.7, totalViews*0.78, totalViews*0.85, totalViews*0.92, totalViews];
+            charts.push(new Chart(ctxOverview, {
+                type: 'line',
+                data: { labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'], datasets: [{ label: 'Views', data: mockTrend, borderColor: '#4F46E5', backgroundColor: gradientBlue, borderWidth: 4, fill: true, tension: 0.4, pointRadius: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            }));
+
+            // Chart 0.2
+            charts.push(new Chart(document.getElementById('sentimentChart'), {
+                type: 'doughnut',
+                data: { labels: ['Positive', 'Neutral', 'Negative'], datasets: [{ data: [65, 20, 15], backgroundColor: ['#34D399', '#E2E8F0', '#F87171'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, cutout: '75%', plugins: { legend: { display: false } } }
+            }));
+
+            // Chart 1
+            charts.push(new Chart(document.getElementById('barViewsChart'), {
+                type: 'bar',
+                data: { labels: top10.map(k => '@' + k.name), datasets: [{ label: 'Views', data: top10.map(k => k.views), backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { callback: val => (val/1000) + 'K' } } } }
+            }));
+
+            // Chart 2
+            charts.push(new Chart(document.getElementById('stackedEngChart'), {
+                type: 'bar',
+                data: {
+                    labels: top5.map(k => '@' + k.name),
+                    datasets: [
+                        { label: 'Likes', data: top5.map(k => k.likes), backgroundColor: '#f472b6' },
+                        { label: 'Comments', data: top5.map(k => k.comments), backgroundColor: '#60a5fa' },
+                        { label: 'Saves', data: top5.map(k => k.saves), backgroundColor: '#8b5cf6' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } }, scales: { x: { stacked: true, display: false }, y: { stacked: true, ticks: { callback: val => (val/1000) + 'K' } } } }
+            }));
+
+            // Chart 3
+            charts.push(new Chart(document.getElementById('intentChart'), {
+                type: 'doughnut',
+                data: { labels: ['Likes', 'Comments', 'Shares', 'Saves'], datasets: [{ data: [tLikes, tComments, tShares, tSaves], backgroundColor: ['#f472b6', '#3b82f6', '#fbbf24', '#8b5cf6'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            }));
+
+            // Chart 4
+            charts.push(new Chart(document.getElementById('tierChart'), {
+                type: 'pie',
+                data: { labels: ['Macro', 'Mid', 'Micro', 'Nano'], datasets: [{ data: [tiers.macro, tiers.mid, tiers.micro, tiers.nano], backgroundColor: ['#ef4444', '#f97316', '#10b981', '#64748b'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            }));
+
+            // Chart 5
+            let validCpvKols = kols.filter(k => k.cpv > 0).sort((a,b) => a.cpv - b.cpv).slice(0, 5);
+            charts.push(new Chart(document.getElementById('cpvChart'), {
+                type: 'bar',
+                data: { labels: validCpvKols.length > 0 ? validCpvKols.map(k => '@' + k.name) : ['N/A'], datasets: [{ label: 'CPV (฿)', data: validCpvKols.length > 0 ? validCpvKols.map(k => k.cpv) : [0], backgroundColor: '#10b981', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } } }
+            }));
+
+            // Chart 6
+            let scatterData = kols.map(k => ({ x: k.followers, y: k.views, name: k.name }));
+            charts.push(new Chart(document.getElementById('scatterChart'), {
+                type: 'scatter',
+                data: { datasets: [{ label: 'KOLs', data: scatterData, backgroundColor: 'rgba(236, 72, 153, 0.6)', borderColor: '#ec4899', pointRadius: 6, pointHoverRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `@${ctx.raw.name}: ${formatNumber(ctx.raw.y)} views` } } }, scales: { x: { title: { display: true, text: 'Followers' }, ticks: { callback: val => (val/1000) + 'K' } }, y: { title: { display: true, text: 'Views' }, ticks: { callback: val => (val/1000) + 'K' } } } }
+            }));
+
+            // Chart 7
+            let fmtLabels = Object.keys(formats); let fmtData = fmtLabels.map(f => formats[f].sumViews / formats[f].count);
+            charts.push(new Chart(document.getElementById('formatChart'), {
+                type: 'bar',
+                data: { labels: fmtLabels, datasets: [{ label: 'Avg Views', data: fmtData, backgroundColor: '#3b82f6', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: val => (val/1000) + 'K' } } } }
+            }));
+
+            // Chart 8
+            charts.push(new Chart(document.getElementById('erDistChart'), {
+                type: 'bar',
+                data: { labels: Object.keys(erBuckets), datasets: [{ label: '# of KOLs', data: Object.values(erBuckets), backgroundColor: '#f59e0b', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            }));
+
+            // Chart 9
+            let vrErData = kols.map(k => ({ x: k.vr, y: k.er, name: k.name }));
+            charts.push(new Chart(document.getElementById('vrErChart'), {
+                type: 'scatter',
+                data: { datasets: [{ label: 'KOLs', data: vrErData, backgroundColor: 'rgba(139, 92, 246, 0.6)', borderColor: '#8b5cf6', pointRadius: 5 }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `@${ctx.raw.name}: VR ${ctx.raw.x}%, ER ${ctx.raw.y}%` } } }, scales: { x: { title: { display: true, text: 'View Rate (%)' } }, y: { title: { display: true, text: 'Engagement Rate (%)' } } } }
+            }));
+
+            // Chart 10
+            let validCpeKols = kols.filter(k => k.cpe > 0).sort((a,b) => a.cpe - b.cpe).slice(0, 5);
+            charts.push(new Chart(document.getElementById('cpeChart'), {
+                type: 'bar',
+                data: { labels: validCpeKols.length > 0 ? validCpeKols.map(k => '@' + k.name) : ['N/A'], datasets: [{ label: 'CPE (฿)', data: validCpeKols.length > 0 ? validCpeKols.map(k => k.cpe) : [0], backgroundColor: '#ec4899', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } } }
+            }));
+        }
+
+        // ================= 5. THE ULTIMATE PDF STITCHING (PAGINATED TABLE) =================
+        async function exportToPDF() {
+            const btn = document.getElementById('exportBtn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = 'Capturing Pages... Please wait';
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.style.display = 'none'; 
+            
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('loading-text').innerText = "Processing PDF (Please do not scroll)...";
+
+            // บังคับโชว์ทุก Tab
+            document.getElementById('tab-charts').classList.remove('hidden');
+            document.getElementById('tab-charts').classList.add('block');
+            document.getElementById('tab-table').classList.remove('hidden');
+            document.getElementById('tab-table').classList.add('block');
+
+            // ล็อกหน้าจอให้พอดีเป๊ะ
+            const wrapper = document.getElementById('dashboard-wrapper');
+            const originalWidth = wrapper.style.width;
+            wrapper.style.width = '1400px'; 
+            for(let i in charts) { charts[i].resize(); }
+
+            setTimeout(async () => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4'); // A4 Landscape
+                const pdfWidth = 297; 
+                
+                try {
+                    // --- CAPTURE PAGE 1, 2, 3 (CHARTS) ---
+                    const chartPages = ['capture-page-1', 'capture-page-2', 'capture-page-3'];
+                    for (let i = 0; i < chartPages.length; i++) {
+                        if (i > 0) pdf.addPage();
+                        
+                        const pageEl = document.getElementById(chartPages[i]);
+                        const canvas = await html2canvas(pageEl, {
+                            scale: 2, 
+                            useCORS: true,
+                            backgroundColor: '#F8FAFC',
+                            windowWidth: 1400 
+                        });
+                        
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+                    }
+
+                    // --- CAPTURE TABLE (PAGE 4+) ---
+                    // ระบบหั่นแถวตาราง ไม่ให้โดนตัดขาด
+                    const tableTab = document.getElementById('tab-table');
+                    const tbody = document.getElementById('table-body');
+                    const allRows = Array.from(tbody.querySelectorAll('tr'));
+                    
+                    const rowsPerPage = 12; // ล็อกจำนวน 12 แถวต่อ 1 หน้า (เพื่อให้พอดี A4)
+                    const backupHTML = tbody.innerHTML; // สำรองข้อมูลตารางเดิม
+
+                    for (let i = 0; i < allRows.length; i += rowsPerPage) {
+                        const chunk = allRows.slice(i, i + rowsPerPage);
+                        
+                        // เคลียร์ตารางเดิม และใส่เฉพาะ 12 แถวของรอบนี้
+                        tbody.innerHTML = '';
+                        chunk.forEach(row => tbody.appendChild(row));
+                        
+                        // อัปเดตเลขหน้า
+                        document.getElementById('table-header-title').querySelector('h3').innerText = `Detailed Raw Data (Page ${Math.floor(i/rowsPerPage) + 1})`;
+                        
+                        pdf.addPage();
+                        const canvas = await html2canvas(tableTab, {
+                            scale: 2, 
+                            useCORS: true,
+                            backgroundColor: '#F8FAFC',
+                            windowWidth: 1400 
+                        });
+                        
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+                    }
+                    
+                    // คืนค่าตารางเดิม
+                    tbody.innerHTML = backupHTML;
+                    document.getElementById('table-header-title').querySelector('h3').innerText = `Detailed Raw Data`;
+                    
+                    pdf.save('Kolify_Master_Analytics_Report.pdf');
+
+                } catch (err) {
+                    console.error("PDF Export Error: ", err);
+                    alert("Sorry, an error occurred while creating the PDF.");
+                } finally {
+                    document.getElementById('tab-table').classList.remove('block');
+                    document.getElementById('tab-table').classList.add('hidden');
+                    switchTab('charts');
+
+                    btn.style.display = 'flex';
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    document.getElementById('loading-indicator').classList.add('hidden');
+                    
+                    wrapper.style.width = originalWidth;
+                    for(let i in charts) { charts[i].resize(); }
+                }
+            }, 500); 
+        }
+    </script>
+    
+    <script src="banner.js"></script>
+</body>
+</html>
